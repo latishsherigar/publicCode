@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body onLoad="">
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<script>
+
+var videoPlayerWindow;
+
+function getvideostreamsUrls(){
+
+
+
+var str_recording_date = document.getElementById("recording_date").value;
+
+var search_from_date = str_recording_date.substr(0,4) + "" + str_recording_date.substr(5,2) + "" + str_recording_date.substr(8,5);
+
+var cam_name = document.getElementById("cams").value;
+
+if(str_recording_date!="" && cam_name !=""){
+  fetchVideoRecordingList(cam_name,search_from_date);
+
+}
+
+
+
+}
+
+
+function fetchVideoRecordingList(cam_name,search_from_date) {
+  const xhttp = new XMLHttpRequest();
+  xhttp.onload = function() {
+   const videoFilesArr =   JSON.parse(this.responseText);
+   populate_videoList(cam_name,videoFilesArr);
+
+  }
+  xhttp.open("GET", "/ls?cam=" + cam_name + "&search_from_date=" + search_from_date);
+  xhttp.send();
+}
+
+function populate_videoList(cam_name,videoFilesArr){
+
+var table =  document.getElementById("videofilelisttbl");
+
+const rowcount = table.rows.length ;
+
+for(i=rowcount-1;i>=0;--i){
+  table.deleteRow(i);
+  console.log("delete row " + i + " table.rows.length - " + table.rows.length)
+}
+
+   for(i=0;i<videoFilesArr.length;++i){
+     console.log(videoFilesArr[i].name + "  --  " + videoFilesArr[i].name.substr(9,2) + ":" + videoFilesArr[i].name.substr(11,2)  );
+     var rowCount = table.rows.length;
+     var row = table.insertRow(rowCount);
+     var cell_time = row.insertCell(0);
+     cell_time.innerHTML = videoFilesArr[i].name.substr(9,2) + ":" + videoFilesArr[i].name.substr(11,2);
+     var cell_videolink = row.insertCell(1);
+     videoUrl = "getfile?cam=" + cam_name + "&file="+ videoFilesArr[i].name;
+     cell_videolink.innerHTML = "<button onclick=openVideoPlayer('"+ videoUrl +"')>Open</button>";
+     
+   }
+}
+
+function openVideoPlayer(videoUrl) {
+
+  document.getElementById("requestedVideoUrl").value = videoUrl;
+  if(videoPlayerWindow!=null){
+    videoPlayerWindow.close();
+  }
+
+  videoPlayerWindow = window.open("viewer.html", "videowindow");
+
+}
+
+</script>
+
+<center><h1>Sheri Cam Viewer</h1></center>
+ <label for="cam">Choose a camera:</label>
+
+<select id="cams" >
+  <option value=""></option>
+  <option value="entrance_cam1">Main Entrance</option>
+  <option value="main_door">Main door</option>
+  <option value="hall">Hall</option>
+  <option value="north_veranada">North Veranda</option>
+  <option value="parking">Parking</option>
+  <option value="compound">Compound</option>
+  <option value="backside">Back side</option>
+
+
+
+</select> 
+<p/>
+<label for="cam">Choose Date and time</label>
+
+<input type="hidden" id="timezone" name="timezone" value="+05:30" />
+<input type="datetime-local" id="recording_date" name="recording_date" >
+
+
+<p/>
+  <input type="submit" onClick="getvideostreamsUrls()">
+  <p/>
+    <table id="videofilelisttbl" >
+     <tr>
+      <th>Time</th>
+      <th>Video</th>
+     </tr>
+    </table>
+    
+<input type="hidden" id="requestedVideoUrl"/>  
+</body>
+</html>
+

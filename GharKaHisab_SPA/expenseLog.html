@@ -1,0 +1,49 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Expense log11</title>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+</head>
+<body>
+	<script type='text/javascript' src="js/jquery-min.js"></script>
+	<script type='text/javascript' src="js/bootstrap.min.js"></script>
+
+	<script>
+	$(document).ready(function() {
+		$.getJSON("db/expensetypes.json", function(data) {
+		  var dropdown = $("#expenseType");
+		  dropdown.empty(); // Clear existing options
+	  
+		  $.each(data, function(key, value) {
+			console.log(key + "---" + value);
+			expenseTypeArr=value;
+			for( i=0;i<expenseTypeArr.length;++i){
+				dropdown.append($("<option></option>")
+			  .attr("value", expenseTypeArr[i].id)
+			  .text(expenseTypeArr[i].description)); 
+			}
+			
+		  });
+		});
+	  });
+</script>
+
+	<div class="container">
+
+		<form role="form" id="expense_form" method="post" action="expenseLog.html">
+			<div class="form-group col-xs-5">
+				<label for="expenseType">Expense Type</label> <select
+					id="expenseType" name="expenseType" class="form-control">
+					<option></option>
+						
+					</select>
+
+			</div>
+
+	</div>
+
+</body>
+</html>

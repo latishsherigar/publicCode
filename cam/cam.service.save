@@ -1,0 +1,10 @@
+
+WantedBy=multi-user.target[Unit]
+Description=Startup Script for Camservice
+After=multi-user.target
+
+[Service]
+ExecStart=/opt/cam/runall.sh
+
+[Install]
+
